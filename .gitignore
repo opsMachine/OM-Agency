@@ -1,0 +1,71 @@
+# Session-Specific Data (Don't Track)
+plans/
+*.plan.md
+*-plan.md
+history.jsonl
+shell-snapshots/
+file-history/
+todos/
+
+# Claude Code System Files (Don't Track)
+.credentials.json
+settings.local.json
+stats-cache.json
+statsig/
+debug/
+ide/
+plugins/
+projects/
+
+# Logs and Temporary Files
+*.log
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Cache and Build Artifacts
+.cache/
+cache/
+node_modules/
+.venv/
+__pycache__/
+
+# OS-Specific Files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# IDE-Specific
+.vscode/
+.idea/
+*.sublime-*
+
+# Backup Files
+*.bak
+*.backup
+*~
+
+# Environment Files (may contain secrets)
+.env
+.env.*
+!.env.example
+
+# Personal Notes (unless explicitly named otherwise)
+notes/
+scratch/
+todo.txt
+personal-notes.md
+
+# Claude Agent SDK artifacts (if any)
+.claude-agent/
+agent-output/
+
+# Allow These (Our Operational System)
+!CLAUDE.md
+!OPERATIONAL_SYSTEM.md
+!skills/**/*.md
+!skills/**/SKILL.md
