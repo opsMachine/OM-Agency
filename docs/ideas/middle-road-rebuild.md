@@ -1,3 +1,5 @@
+# INTEGRATED INTO v3.1 MASTER PLAN
+
 # Design Sketch: The Middle Road Rebuild
 
 A vision document, not an implementation plan. Captures what we'd build if we started fresh with everything we've learned. Keep on hand — implement when the timing is right.
