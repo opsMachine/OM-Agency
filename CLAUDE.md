@@ -1,24 +1,33 @@
-# Skills System
+# OM-Agency Skills System
 
-> **MANDATORY FIRST ACTION:** Before responding to ANY work request, read `~/.claude/skills/workflow-router/SKILL.md` and follow its Quick Start checklist. Announce `🎯 Workflow Manager active. Checking project state...`, orient, then propose the next skill. Do NOT skip this step.
+Modular skill ecosystem for Claude Code and Cursor. Skills are composable workflow nodes with typed contracts that orchestrate AI-assisted development workflows.
 
-Modular skill ecosystem for Claude Code and Cursor. Skills are composable workflow nodes with typed contracts.
+## 🎯 MANDATORY FIRST ACTION
+Before responding to ANY work request, you MUST:
+1. Announce: `🎯 Workflow Manager active. Checking project state...`
+2. Read `skills/workflow-router/SKILL.md`
+3. Generate the **Orientation Todo List** defined in the router.
+4. Report findings and propose the next skill.
+5. Wait for human confirmation before proceeding.
 
-## What This Repo Is
+## Instruction Hierarchy (Enforcement)
+1. **Injected Hooks** (Highest Priority): Instructions from session start or prompt hooks.
+2. **User Commands**: The specific task requested.
+3. **Playbook/Principles**: Methodology in skill files.
 
-This is the skill system itself — not a product codebase. Changes here affect how agents work across all projects.
+*Note: If a user command conflicts with the orientation mandate, orient first, then execute.*
 
 ## Key References
 
 | Need | File |
 |------|------|
 | Workflow navigation & state model | `skills/workflow-router/SKILL.md` |
-| System design history | `~/.claude/docs/OPERATIONAL_SYSTEM.md` |
+| System design history | `docs/design-history.md` |
 | Skill contracts & shared primitives | `skills/shared/` |
 
 ## When Editing Skills
 
-- Follow existing patterns in other SKILL.md files
-- Every skill needs a `contract:` block in frontmatter
-- Reference `shared/spec-io.md` and `shared/github-ops.md` instead of duplicating
-- Test by invoking the skill in a real project
+- Every skill needs a `contract:` block in frontmatter.
+- Every workflow skill MUST generate a **task-specific todo list** on invocation.
+- Reference `shared/spec-io.md` and `shared/github-ops.md` instead of duplicating.
+- Follow the **Principles vs SOPs** distinction: Docs carry principles; Todos carry SOPs.

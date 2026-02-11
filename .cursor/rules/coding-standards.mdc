@@ -1,0 +1,25 @@
+---
+description: Coding standards and security defaults
+alwaysApply: true
+---
+
+# Coding Standards & Security
+
+Follow these principles for all implementation tasks.
+
+## Principles
+1. **Match Existing Patterns**: Read the codebase before writing. Follow existing naming, structure, and abstraction patterns.
+2. **Minimum Viable Change**: Do not gold-plate. Implement exactly what is needed for the requirement.
+3. **Principles over Procedures**: Use judgment to produce high-quality code. The playbooks guide your thinking; your craft delivers the result.
+
+## Security Defaults
+1. **No Hardcoded Secrets**: Use env vars or secret managers.
+2. **Input Validation**: Never trust user input. Validate at the entry point.
+3. **Supabase (if used)**:
+   - Mandatory RLS on all new tables.
+   - JWT verification in Edge Functions.
+   - Minimum exposure for Service Role keys.
+
+## Verification
+1. **End-to-End**: A feature isn't done until you've verified it works in a real-world scenario (UI, API, or DB).
+2. **Honest Assessment**: Signal uncertainty using the ⚠️ flag in your satisfaction reports.
