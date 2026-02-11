@@ -21,5 +21,9 @@
       "~/.claude/plans",
       "~/.claude/skills"
     ]
+  },
+  "hooks": {
+    "SessionStart": "~/.claude/hooks/session-start.sh",
+    "UserPromptSubmit": "~/.claude/hooks/prompt-orientation.sh"
   }
 }

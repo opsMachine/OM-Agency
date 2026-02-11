@@ -25,12 +25,14 @@ The system utilizes a 4-phase todo-driven workflow designed to minimize context 
    ```bash
    ln -s /path/to/OM-Agency/skills ~/.claude/skills
    ln -s /path/to/OM-Agency/agents ~/.claude/agents
+   ln -s /path/to/OM-Agency/hooks ~/.claude/hooks
    ```
 3. For Cursor, symlink the rules:
    ```bash
    ln -s /path/to/OM-Agency/.cursor/rules .cursor/rules
    ```
-4. Copy `settings.example.json` to your project's `.claude/settings.json` and adjust.
+4. **Register Hooks & Permissions**: Copy `settings.example.json` to your global `~/.claude/settings.json` (or merge if you have existing settings).
+   *Note: Symlinking the hook folder is not enough; the scripts must be registered in the `hooks` section of your settings to fire.*
 5. See `skills/SKILL.md` for the skill writing guide.
 
 ## Structure
@@ -38,6 +40,7 @@ The system utilizes a 4-phase todo-driven workflow designed to minimize context 
 ```
 skills/           Unified workflow skills (Understand, Test, Build, Deliver)
 agents/           Sub-agent definitions for skill dispatch
+hooks/            Automation scripts (SessionStart, UserPromptSubmit)
 docs/archive/     v2.0 legacy skills and design history
 ```
 
