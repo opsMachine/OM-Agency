@@ -24,6 +24,7 @@
   },
   "hooks": {
     "SessionStart": "~/.claude/hooks/session-start.sh",
-    "UserPromptSubmit": "~/.claude/hooks/prompt-orientation.sh"
+    "UserPromptSubmit": "~/.claude/hooks/prompt-orientation.sh",
+    "PreCommit": "~/.claude/hooks/pre-commit.sh"
   }
 }
