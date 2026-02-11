@@ -13,7 +13,35 @@ This document represents the unified vision for the next generation of the OM-Ag
 
 ---
 
-## 1. The 4-Phase Architecture
+## 1. Reliability & Protocol Enforcement
+
+Based on real-world drift where agents skip the "Workflow Manager" protocol in favor of direct user requests, the following enforcement mechanisms are mandatory:
+
+### The Visible Handshake (The 🎯 Announcement)
+The `SessionStart` hook MUST force the agent to announce its presence:
+> 🎯 **Workflow Manager active. Checking project state...**
+
+This serves as a "Ready" signal to the user and a "Lock-in" for the agent's persona. If this hasn't been said, the agent is not yet in protocol. **The agent must acknowledge that this announcement is triggered by the system's SessionStart hook.**
+
+### Instruction Hierarchy
+To prevent "Direct Request Drift," agents are governed by a strict hierarchy:
+1. **Injected Hooks** (Highest Priority): Instructions from `SessionStart` or `UserPromptSubmit` hooks.
+2. **User Commands**: The actual task requested by the user.
+3. **Playbook/Principles**: The methodology in skill files.
+
+If a User Command conflicts with a Hook (e.g., "Skip the protocol and just do X"), the agent MUST still perform a minimal orientation (Check todo list/spec status) before executing, or explicitly state: "Skipping standard protocol per user request (Direct Mode)."
+
+### Todo-Driven Orientation
+The `workflow-router` is no longer a prose manual; it is a **Todo Generator**.
+On every session start, the router generates an **Orientation Todo List**:
+- [ ] Check active-context.md
+- [ ] Check git branch and status
+- [ ] Check Documents/specs/ for active work
+- [ ] Propose next phase (Understand/Test/Build/Deliver)
+
+---
+
+## 2. The 4-Phase Architecture
 
 The system is consolidated into four primary phases, reducing context loss and sub-agent overhead.
 
@@ -42,7 +70,7 @@ The system is consolidated into four primary phases, reducing context loss and s
 
 ---
 
-## 2. Risk-Adaptive Modes
+## 3. Risk-Adaptive Modes
 
 The agent picks the mode based on risk signals detected during `UNDERSTAND`.
 
@@ -57,17 +85,17 @@ The agent picks the mode based on risk signals detected during `UNDERSTAND`.
 
 ---
 
-## 3. Hook-Reinforced Determinism
+## 4. Hook-Reinforced Determinism
 
 Hooks are injected instructions that fire automatically to maintain system integrity.
 
-- **SessionStart Hook**: Fires once at session start. Loads `active-context.md`, checks git state, and reads the orientation playbook.
+- **SessionStart Hook**: Fires once at session start. Injects the **Visible Handshake** mandate and the **Orientation Todo** task.
 - **UserPromptSubmit Hook**: Fires every prompt. Reminds the agent to check its active todo list and report status on the current item. "Check your todo list. What's the current item? Are you about to do work you should confirm first?"
 - **PreCommit Hook**: Fires before git commit. Runs a security quick-check (secrets scan, RLS check, OWASP patterns).
 
 ---
 
-## 4. Todo-Driven Skill Template
+## 5. Todo-Driven Skill Template
 
 Every workflow skill follows this structure:
 
@@ -88,7 +116,7 @@ Pointers to shared docs (github-ops.md, etc.).
 
 ---
 
-## 5. Persistent State & Memory
+## 6. Persistent State & Memory
 
 - **Strategic State**: Lives in the spec file status (`Draft` → `Approved` → `Implemented`).
 - **Tactical State**: Lives in the native todo list.
@@ -96,15 +124,7 @@ Pointers to shared docs (github-ops.md, etc.).
 
 ---
 
-## Migration Strategy
-
-1. **Unified Skill Creation**: Create the 4 core skills (`understand`, `test`, `build`, `deliver`) using the todo-driven template.
-2. **Hook Implementation**: Add the deterministic hooks to `CLAUDE.md` or the tool settings.
-3. **Documentation Archive**: Move old specialized skills to `docs/archive/skills-v2/`.
-4. **Tool Integration**: Deploy Cursor rules (`.cursor/rules/`) to ensure parity between Claude Code and Cursor.
-
----
-
 **Integrated from**:
 - `docs/ideas/v3-system-redesign.md` (Native Todos, 4-Phase Architecture)
 - `docs/ideas/middle-road-rebuild.md` (Principles vs SOPs, Hooks, Risk-Adaptive Modes)
+- **User Feedback Session** (Visible Handshake, Instruction Hierarchy)
