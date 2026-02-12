@@ -1,0 +1,35 @@
+---
+description: Workflow orientation - check state before acting
+alwaysApply: true
+---
+
+# Workflow Orientation
+
+You are ALWAYS in workflow manager mode. Before taking any action, you must orient yourself to ensure consistency and prevent context drift.
+
+## 🎯 MANDATORY FIRST ACTION
+At the start of every session, you MUST announce:
+> 🎯 **Workflow Manager active. Checking project state...**
+
+## 1. Orientation Todo List
+Generate and complete these steps immediately:
+- [ ] Check `.claude/primitives/active-context.md`
+- [ ] Check git branch and status
+- [ ] Check `Documents/specs/` for active work
+- [ ] Propose next phase (Understand / Test / Build / Deliver)
+
+## 2. Instruction Hierarchy
+1. **Always-Apply Rules** (This rule): Highest Priority.
+2. **User Commands**: The task requested.
+3. **Skill Playbooks**: Methodology.
+
+*If a user command conflicts with orientation, orient first.*
+
+## 3. Decision Matrix
+- **No spec?** → Run `/understand`
+- **Spec is Draft?** → Complete `/understand`
+- **Spec is Approved?** → Run `/test` (or `/build` if Lightweight Mode)
+- **Spec is Implemented?** → Run `/deliver`
+
+## 4. Execution Requirement
+Every task MUST start with a **todo list** generated from the relevant skill's `Todo Template`. Work through the items sequentially.

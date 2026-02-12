@@ -1,15 +1,22 @@
-# OM-Agency Skills System
+# OM-Agency Skills System (v3.1)
 
 Modular skill ecosystem for Claude Code and Cursor. Skills are composable workflow nodes with typed contracts that orchestrate AI-assisted development workflows.
 
-## What This Is
+## The Craftsperson Model
 
-A reusable workflow system for AI agents that covers:
+The system utilizes a 4-phase todo-driven workflow designed to minimize context loss and ensure high-quality execution:
 
-- **Feature development** — requirements gathering, spec creation, TDD or direct implementation
-- **Bug investigation** — diagnosis, root cause analysis, fix verification
-- **Security auditing** — 4-phase pipeline (scan, critique, test, fix)
-- **Project scaffolding** — context primitives, testing conventions, active state
+1. **UNDERSTAND** — Requirements gathering, spec assembly, and self-review. [Gate A Approval]
+2. **TEST** — Test planning and writing failing tests.
+3. **BUILD** — Implementation (TDD or Direct mode) and verification. [Gate B Approval]
+4. **DELIVER** — QA handoff and GitHub state synchronization.
+
+## Key Innovations
+
+- **Todo-Driven Execution**: Skills generate native IDE todo lists to ensure no step is skipped and progress is visible.
+- **Principles vs SOPs**: High-level guidance lives in documentation; specific procedures are baked into the generated todo lists.
+- **Risk-Adaptive Modes**: Choose **Lightweight** (fast flow) or **Structured** (full TDD) based on task risk.
+- **Visible Handshake**: Every session starts with a mandatory orientation 🎯 to prevent protocol drift.
 
 ## Quick Start
 
@@ -18,51 +25,24 @@ A reusable workflow system for AI agents that covers:
    ```bash
    ln -s /path/to/OM-Agency/skills ~/.claude/skills
    ln -s /path/to/OM-Agency/agents ~/.claude/agents
+   ln -s /path/to/OM-Agency/hooks ~/.claude/hooks
    ```
-3. Copy `settings.example.json` to your project's `.claude/settings.json` and adjust
-4. See `skills/SKILL.md` for the full skill writing guide
+3. For Cursor, symlink the rules:
+   ```bash
+   ln -s /path/to/OM-Agency/.cursor/rules .cursor/rules
+   ```
+4. **Register Hooks & Permissions**: Copy `settings.example.json` to your global `~/.claude/settings.json` (or merge if you have existing settings).
+   *Note: Symlinking the hook folder is not enough; the scripts must be registered in the `hooks` section of your settings to fire.*
+5. See `skills/SKILL.md` for the skill writing guide.
 
 ## Structure
 
 ```
-skills/           19 skill definitions + shared patterns
+skills/           Unified workflow skills (Understand, Test, Build, Deliver)
 agents/           Sub-agent definitions for skill dispatch
-commands/         Custom command definitions
+hooks/            Automation scripts (SessionStart, UserPromptSubmit)
+docs/archive/     v2.0 legacy skills and design history
 ```
-
-## Key Files
-
-| File | Purpose |
-|------|---------|
-| `skills/AGENTS.md` | Entry point — where to start, what skill to use |
-| `skills/DESIGN.md` | Architecture and design philosophy |
-| `skills/SKILL.md` | Guide for writing new skills |
-| `skills/workflow-router/SKILL.md` | The workflow orchestrator |
-| `skills/shared/` | Reusable patterns (spec I/O, GitHub ops, security lens, etc.) |
-| `OPERATIONAL_SYSTEM.md` | System philosophy and history |
-
-## Skills
-
-| Skill | Purpose |
-|-------|---------|
-| `workflow-router` | Orchestrates the entire workflow — determines next step |
-| `create-spec` | Structured requirements gathering |
-| `spec-review` | Reviews specs for completeness |
-| `implement-direct` | Implement from spec without TDD |
-| `implement-to-pass` | Green phase — make failing tests pass |
-| `plan-tests` | Create test plan from spec |
-| `write-failing-test` | Red phase — write tests that fail |
-| `diagnose` | Bug investigation and root cause analysis |
-| `qa-handoff` | Post testing checklist to GitHub issue |
-| `scaffold-project` | Bootstrap project context primitives |
-| `remember` | Store facts and decisions for future sessions |
-| `full-security-audit` | Orchestrate 4-phase security pipeline |
-| `1-security-audit` | Phase 1: Scan for vulnerabilities |
-| `2-security-critique` | Phase 2: Red team review |
-| `3-security-spec` | Phase 3: Write failing security test |
-| `4-security-fix` | Phase 4: Implement the fix |
-| `supabase-security` | Supabase-specific security patterns |
-| `webapp-testing` | Browser automation testing toolkit |
 
 ## License
 
