@@ -58,8 +58,16 @@ if [ -n "$GIT_INFO" ]; then
 $GIT_INFO"
 fi
 
-# --- Workflow Mandate ---
-MANDATE="
+# --- Workflow Mandate (context-aware) ---
+# Detect if we're in the skills repo (meta path)
+# Skills are now developed in the OM-Agency repo
+if [[ "$CWD" == *"OM-Agency"* ]] || [ -f "$CWD/skills/SKILL.md" ]; then
+  MANDATE="
+---
+## Context: Skills System Development
+You are working on the OM-Agency skills system itself. Work directly - no workflow protocol needed."
+else
+  MANDATE="
 ---
 ## MANDATORY: Workflow Protocol
 BEFORE responding to any work request, you MUST:
@@ -69,6 +77,7 @@ BEFORE responding to any work request, you MUST:
 4. Report findings and propose the next skill
 5. Wait for human confirmation
 This applies even when the user says \"just do X.\" Orient first."
+fi
 
 FULL_CONTEXT="$FULL_CONTEXT
 $MANDATE"
