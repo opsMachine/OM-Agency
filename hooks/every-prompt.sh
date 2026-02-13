@@ -5,7 +5,7 @@
 # or the skills repo itself (meta/builder mode).
 
 # Detect if we're in the skills repo (meta path)
-if [[ "$PWD" == *".claude/skills"* ]] || [[ "$PWD" == *".claude-worktrees/skills"* ]]; then
+if [[ "$PWD" == *".claude/"* ]] || [[ "$PWD" == *".claude-worktrees/skills"* ]]; then
   cat <<'HOOK_JSON'
 {
   "additionalContext": "## Context: Skills System (Meta Path)\nYou are editing the skill system itself. You work directly — no sub-agent dispatch needed.\nBefore responding: (1) What deliverable am I working on? (2) Have I synced any tracking docs?"
