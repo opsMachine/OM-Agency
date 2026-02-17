@@ -90,6 +90,19 @@ Evaluate each section against these criteria:
 - Empty section (every feature has assumptions)
 - Implicit assumptions not made explicit
 
+#### Falsification Analysis
+- [ ] Strongest failure case identified ("What's the strongest case this fails?")
+- [ ] Critical assumptions made explicit ("What am I assuming that, if wrong, breaks everything?")
+- [ ] Edge cases for manual testing documented ("What needs manual testing before showing client?")
+
+**Red flags:**
+- Section missing entirely
+- Generic answers like "usual edge cases"
+- No consideration of failure modes
+- Implementer won't know what to stress-test
+
+**Note:** This section helps activate falsification (testing if you're wrong BEFORE implementing). It prevents discovering issues through iteration that could be caught upfront.
+
 #### Technical Notes
 - [ ] Implementation hints provided (if known)
 - [ ] Existing patterns to follow mentioned
@@ -162,6 +175,10 @@ Format your response as:
 
 **Assumptions:** {Complete | Incomplete}
 - {specific feedback}
+
+**Falsification Analysis:** {Complete | Incomplete}
+- {specific feedback}
+- Failure modes considered: {yes/no}
 
 **Security Considerations:** {Complete | Incomplete}
 - {specific feedback}

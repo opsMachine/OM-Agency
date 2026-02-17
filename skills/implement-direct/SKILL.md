@@ -106,15 +106,34 @@ Work through each acceptance criterion. As you implement:
 
 ### Step 5: Verify It Works
 
+**Before marking work complete, follow the testing requirements from `shared/testing-standards.md`.**
+
 After implementation:
-1. Build/compile succeeds
-2. No obvious runtime errors
-3. Feature appears to work (if you can test locally)
-4. Verify at least one acceptance criterion end-to-end (run a test, check the UI, or hit the endpoint)
+
+**1. Run Automated Tests**
+- Execute test suite: `npm test` (or project-specific command)
+- Verify all existing tests still pass (no regressions)
+- Quick fixes require full testing too — no shortcuts
+
+**2. Manual Verification**
+- **Happy path:** Primary user flow works as specified
+- **Error cases:** Invalid input handled, error messages display properly
+- **Edge cases:** Test falsification scenarios from spec (if present)
+- **UI verification:** No console errors, correct rendering, data persists
+
+**3. Document Testing**
+Record what you tested and results:
+```
+### Verification
+- Tested: form submission happy path (✅ works)
+- Tested: invalid email handling (✅ error displays)
+- Tested: edge case from spec (empty description) (✅ handled)
+- Could not verify: rate limiting (no test infrastructure)
+```
 
 Report what you verified vs. what you couldn't. Don't claim full verification if you only checked that it compiles.
 
-**Don't claim it's done if it doesn't build.**
+**Don't claim it's done if it doesn't build or if tests fail.**
 
 ### Step 6: Satisfaction Assessment
 
@@ -162,7 +181,19 @@ Update the spec's `**Status:**` from `Approved` to `Implemented`.
 
 > **End-of-skill check:** See `shared/primitive-updates.md`. Signals: new/changed packages, new scripts, new directories in src/.
 
-### Step 8: Hand Off
+### Step 8: Prepare QA Handoff
+
+Create clear testing instructions for QA using the template from `shared/testing-standards.md`:
+
+- Staging environment link and credentials
+- Step-by-step happy path test instructions
+- Edge cases to verify (from falsification analysis if present)
+- Expected behavior vs what should NOT happen
+- Known limitations
+
+Include this in your completion report so the manager can pass it to qa-handoff.
+
+### Step 9: Hand Off
 
 ```
 Implementation complete.

@@ -101,23 +101,50 @@ Once all tests pass:
 2. Refactor while keeping tests green
 3. Re-run full suite after refactoring
 
-### Step 8: Satisfaction Assessment
+### Step 8: Beyond Tests — Manual Verification
 
-Even though tests pass, assess whether the acceptance criteria (not just the tests) are satisfied.
+**Even though all tests pass, follow the testing requirements from `shared/testing-standards.md`.**
+
 Tests can be narrower than criteria — a passing suite doesn't guarantee full satisfaction.
 
+**Manual Verification Required:**
+- **Happy path:** Run through primary user flow in the actual app
+- **Error cases:** Verify error messages display correctly (not just that exceptions are thrown)
+- **Edge cases:** Test falsification scenarios from spec (if present)
+- **UI verification:** No console errors, correct rendering, data persists after refresh
+
+**Document what you tested:**
+```
+### Beyond Tests Verification
+- Manually tested: quote creation happy path (✅ works)
+- Manually tested: invalid email handling (✅ UI shows error correctly)
+- Could not verify: production email delivery (requires live environment)
+```
+
+### Step 9: Satisfaction Assessment
+
 Re-read each acceptance criterion from the spec. For each, assess honestly:
-- ✅ **Satisfied** — implemented and verified (test covers this)
+- ✅ **Satisfied** — implemented and verified (test covers this + manually verified)
 - ⚠️ **Unsure** — implemented but tests don't fully cover this criterion (explain why)
 - ❌ **Not satisfied** — not implemented or known gap
 - 🔒 **Security** — one line summarizing security posture (see `shared/security-lens.md` Review-Time section)
 
-Also verify at least one acceptance criterion end-to-end beyond just passing unit tests (check the UI, hit the endpoint, or confirm the migration applied correctly). Report what you verified vs. what you couldn't.
-
 Include this assessment in your completion report. The manager uses it
 to decide whether to present Gate B or ask you to fix gaps first.
 
-### Step 9: Complete and Hand Off
+### Step 10: Prepare QA Handoff
+
+Create clear testing instructions for QA using the template from `shared/testing-standards.md`:
+
+- Staging environment link and credentials
+- Step-by-step happy path test instructions
+- Edge cases to verify (from falsification analysis if present)
+- Expected behavior vs what should NOT happen
+- Known limitations
+
+Include this in your completion report so the manager can pass it to qa-handoff.
+
+### Step 11: Complete and Hand Off
 
 After ALL tests pass:
 

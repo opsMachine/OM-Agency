@@ -115,6 +115,17 @@ Read these files before starting work:
 - Include a 🔒 Security line in your satisfaction assessment (see `shared/security-lens.md` Review-Time section)
 - Be honest — flag anything you couldn't verify or are uncertain about
 - When done, report: what you did, what files changed, satisfaction assessment, current artifact state
+
+## Testing Requirements (Before Reporting Done)
+- Run the test suite: `npm test` (or relevant command for the project)
+- Manually test the feature in the app:
+  - Happy path (primary user flow)
+  - Error cases (what happens when things go wrong)
+  - Edge cases (from falsification questions in spec, if present)
+- Record what you tested and the results in your completion report
+- If you cannot verify something, flag it clearly in satisfaction assessment
+- Quick fixes require full testing too — no shortcuts for "small changes"
+- Reference `shared/testing-standards.md` for QA handoff template and detailed guidance
 ```
 
 ### Diagnose Sub-Agent Prompt
