@@ -319,6 +319,7 @@ All skills. Scannable by tag. The `Next` column is what's valid after a skill co
 | `4-security-fix` | security, audit, security-phase-4, implementation | security_plan | No | 3-security-spec *(loop)* |
 | `full-security-audit` | security, orchestrator | security_plan | No | 1-security-audit |
 | `supabase-security` | security, reference | — | No | *(reference only)* |
+| `review-audit` | review, audit, verification, quality-gate | — | No | *(reference only)* |
 
 ### Tag Lookup
 
@@ -328,8 +329,9 @@ Find skills by capability, not name.
 |-----|--------|
 | `intake` | interview, spec-review |
 | `requirements` | interview |
-| `review` | spec-review |
-| `quality-gate` | spec-review |
+| `review` | spec-review, review-audit |
+| `quality-gate` | spec-review, review-audit |
+| `verification` | review-audit |
 | `tdd` | plan-tests, write-failing-test, implement-to-pass, 3-security-spec |
 | `testing` | write-failing-test |
 | `red-phase` | write-failing-test |
