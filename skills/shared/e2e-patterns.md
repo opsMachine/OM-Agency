@@ -1,6 +1,6 @@
 # E2E Testing Patterns
 
-Reference guide for end-to-end (E2E) testing using Playwright. Used by TDD skills when writing browser-based tests.
+Reference guide for end-to-end (E2E) testing using Playwright. Used by `implement` skill when writing browser-based tests.
 
 ## When to Use E2E Tests
 
@@ -326,12 +326,10 @@ See `skills/webapp-testing/examples/` for working code:
 
 ## When to Reference This Document
 
-**From plan-tests:** When acceptance criterion has Test Type = E2E
-
-**From write-failing-test:** When writing E2E test, use:
+**From implement (Phase 1):** When acceptance criterion has Test Type = E2E, use:
 - Decision tree to choose approach
 - Reconnaissance-then-action pattern for test structure
 - Helper scripts for server management
 - Best practices for selectors and waits
 
-**From implement-to-pass:** When implementing code to pass E2E test
+**From implement (Phase 2):** When implementing code to pass E2E tests

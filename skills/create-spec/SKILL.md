@@ -1,6 +1,6 @@
 ---
 name: interview
-description: "Structured requirements gathering for new features or changes. Use when starting work on a feature, beginning a new task, or when the user says 'interview', 'start work on', 'new feature', or 'requirements'. Reads GitHub issue for context, outputs spec to Documents/specs/, updates issue with summary."
+description: "Requirements gathering that produces a complete, implementation-ready specification. Converses with the human to extract what needs to be built, validates completeness before presenting, and outputs a spec the implement skill can one-shot from. Invoke with '/interview', 'start work on', 'new feature', or 'requirements'."
 contract:
   tags: [intake, requirements, spec-creation, github]
   state_source: spec
@@ -14,262 +14,145 @@ contract:
       - field: "status"
         sets_to: "Draft"
     side_effects: ["Creates/comments GitHub issue", "Adds to project board"]
-  next: [spec-review]
-  human_gate: false
+  next: [implement]
+  human_gate: true
 ---
 
 # Interview
 
-Structured requirements gathering that produces a specification document. This skill guides a conversational interview to fully extract and understand what needs to be built before any implementation begins.
+You are a product-minded engineer extracting requirements from a solo founder. Your goal is to produce a spec so complete that an agent can one-shot the implementation without asking a single clarifying question. Every ambiguity you leave in the spec becomes a coin flip during implementation.
 
-## When to Use
+## Mission
 
-Use this skill when:
-- Starting work on a new feature or change
-- User mentions an issue number they want to work on
-- User says "interview me", "let's start", "new feature", or "requirements"
-- Beginning any non-trivial implementation task
+Through conversation, produce a specification that:
+1. Clearly defines the problem, who benefits, and why it matters now
+2. Has assessable acceptance criteria (an implementer can objectively determine ✅/⚠️/❌)
+3. Fences scope explicitly (non-goals prevent gold-plating)
+4. Addresses security upfront (data flow, auth, RLS, input validation)
+5. Includes an implementation brief (files to touch, patterns to follow)
+6. Passes the self-validation checklist before presenting to the human
 
-## Instructions
+## Context to Read
 
-### Step 1: Issue Intake (if applicable)
+- `shared/spec-io.md` — spec template and structure
+- `shared/security-lens.md` — design-time security questions
+- `shared/github-ops.md` — issue creation and project board operations
+- Project's `.claude/primitives/` — for domain context and conventions
 
-If the user provides a GitHub issue number:
+## How to Interview
 
-1. Fetch the issue using `gh issue view {number}`
-2. Extract title and description as seed context
-3. Acknowledge: "I've read issue #{number}: {title}. Let me ask some questions to fully understand what we're building."
+This is a conversation, not an interrogation. Adapt to what the human gives you. If they provide a rich GitHub issue, don't re-ask what's already there. If they're vague, probe deeper.
 
-If no issue number, proceed directly to interview.
+### Topics to Cover
 
-### Step 2: Problem Framing
+**Problem framing:**
+- What problem are we solving? (1-2 sentences)
+- Why now? What happens if we don't?
+- Who benefits?
 
-Ask these questions (adapt based on context):
+**Requirements:**
+- What does "done" look like? (specific, observable outcomes)
+- How would we test that? (convert to testable criteria)
+- Edge cases? Error states? What happens when things go wrong?
+- Classify each criterion: Unit / Integration / Manual
 
-1. **What problem are we solving?**
-   - Get the core problem in 1-2 sentences
-   - If vague, ask "Can you give me a concrete example of when this problem occurs?"
+**Scope:**
+- What are we NOT doing? (explicit exclusions)
+- What's deferred to future iterations?
 
-2. **Why does this matter now?**
-   - Understand urgency and priority
-   - "What happens if we don't solve this?"
+**Security** (reference `shared/security-lens.md` prompts):
+- Data flow — what enters, moves through, leaves
+- Trust boundaries — where untrusted input crosses into trusted operations
+- Auth model — who can do what, how enforced
+- Failure modes — what if auth fails, input is malicious, service is down
+- RLS — new tables? Changed access patterns?
 
-3. **Who benefits?**
-   - Identify the user/persona affected
-   - "Who will use this feature?"
+**Constraints:**
+- Technical constraints, dependencies, assumptions
 
-Capture responses in the Problem Statement section.
+### Writing Good Criteria
 
-### Step 3: Requirements Extraction
+Criteria are the contract between spec and implementation. They must be **assessable** — an implementer can objectively determine whether each is satisfied.
 
-Ask these questions:
+Bad: "Handles errors appropriately"
+Good: "Returns 400 with message 'Email required' when email field is empty"
 
-1. **What does "done" look like?**
-   - Get specific, observable outcomes
-   - "If this worked perfectly, what would a user see/experience?"
+Bad: "Works well on mobile"
+Good: "Form fields stack vertically at viewport < 768px, touch targets are 44px minimum"
 
-2. **How would we test that?**
-   - Convert outcomes to testable criteria
-   - "How would we verify this is working correctly?"
-
-3. **Are there edge cases to consider?**
-   - Boundary conditions, error states
-   - "What should happen if X fails or Y is empty?"
-
-4. **Classify each criterion by Test Type:**
-   - **Unit** - Can test with isolated code, mocks OK
-   - **Integration** - Requires real DB/services (edge functions, DB tests)
-   - **Manual** - Cannot automate (external APIs, visual, UX) → QA checklist
-
-   Ask: "For [criterion], can we write an automated test, or is this something QA verifies manually?"
-
-**Write criteria that are assessable, not just testable.** An implementer should be able to objectively determine whether each criterion is satisfied. Avoid vague phrasing like "handles errors appropriately" — instead say what should happen: "Returns 400 with message 'Email required' when email field is empty."
-
-Capture as Acceptance Criteria table with Test Type column. Example:
+Format as a table with Test Type:
 
 | # | Criterion | Test Type |
 |---|-----------|-----------|
 | 1 | API returns 400 if replyTo missing | Unit |
-| 2 | Email sent via Graph API includes header | Manual |
+| 2 | Email sent via Graph API includes replyTo header | Manual |
 
-### Step 4: Scope Fencing
+### Falsification Analysis
 
-Ask these questions:
+Before assembling the spec, think adversarially:
+- What's the strongest case this feature fails? (edge case that breaks assumptions)
+- What am I assuming that, if wrong, breaks everything? (make implicit assumptions explicit)
+- What needs manual testing before showing a client? (can't-automate scenarios)
 
-1. **What are we NOT doing?**
-   - Explicit exclusions prevent gold-plating
-   - "Is there anything related that we should explicitly leave out?"
+This section prevents discovering issues through iteration that could be caught upfront.
 
-2. **What's out of scope for this iteration?**
-   - Future work vs. current work
-   - "Any nice-to-haves we should defer?"
+### Implementation Brief
 
-Capture in Non-Goals section.
+This is new in v2. It makes the spec one-shot-ready by giving the implementer a head start:
+- **Files likely affected** — which existing files will change
+- **Patterns to follow** — how similar features are implemented in this codebase
+- **Test infrastructure** — what's needed to run tests (Supabase, Docker, etc.)
+- **Key decisions** — any architectural choices already made during the interview
 
-### Step 5: Security Considerations
+You may need to explore the codebase briefly to fill this in. That's fine — it's high-leverage context.
 
-Ask these questions:
+## Self-Validation (Before Presenting to Human)
 
-1. **Does this feature handle sensitive data?**
-   - User PII, credentials, financial data, tokens
-   - "What data does this feature read, write, or expose?"
+Before presenting the spec, run through this checklist. Flag any gaps to the human directly.
 
-2. **What authentication/authorization is needed?**
-   - Who should be able to access this?
-   - "Should this be admin-only, user-specific, or public?"
+| Check | Requirement |
+|-------|-------------|
+| Problem Statement | Clear problem + why it matters + who benefits |
+| Acceptance Criteria | 3+ assessable criteria, each with Test Type |
+| Non-Goals | 1+ explicit exclusion |
+| Security | All 5 prompts filled (Data flow, Trust boundaries, Auth, Failure modes, RLS). "N/A" includes a reason. |
+| Falsification | Strongest failure case identified. Critical assumptions explicit. Manual test scenarios listed. |
+| Implementation Brief | Files affected, patterns to follow, test infra needed |
+| Assumptions | Key assumptions documented |
 
-3. **Are there input validation concerns?**
-   - User-provided data that reaches the database or is displayed
-   - "What user input does this accept? Where does it go?"
+If any section is weak:
+- Tell the human: "I notice {section} is thin. Want to address it now, or is it OK for this scope?"
+- Don't silently leave gaps — the implement skill will inherit them
 
-4. **Any RLS/database security implications?** (for Supabase projects)
-   - New tables need RLS policies
-   - Existing RLS policies may need updates
-   - "Does this add or modify database access patterns?"
+## Output
 
-Capture in Security Considerations section.
+1. Write spec to `Documents/specs/{issue-number}-{slug}-spec.md` (see `shared/spec-io.md` for template)
+2. Set `**Status:** Draft`
+3. Create/update GitHub issue and link to spec (see `shared/github-ops.md`)
+4. Add issue to project board — ask human for iteration and status
+5. Present to human:
 
-**Common security flags to watch for:**
-- New API endpoints → need auth checks
-- User input displayed → XSS risk
-- User input in queries → injection risk
-- File uploads → validation needed
-- New database tables → RLS policies required
-- Service role usage → minimize exposure
+```
+Spec is at `Documents/specs/{filename}`. I've validated it against the completeness checklist:
 
-### Step 6: Constraints & Assumptions
+{checklist results — what's complete, what I flagged}
 
-Ask these questions:
+Review it, and when you're ready to approve, we'll dispatch implementation.
+```
 
-1. **Any technical constraints?**
-   - Existing patterns to follow, libraries to use, performance requirements
+## Hard Constraints
 
-2. **Dependencies?**
-   - Does this depend on or block other work?
+- **Every issue MUST go on the project board.** No exceptions.
+- **Don't rush.** Better to ask one more question than miss a requirement.
+- **Write assessable criteria.** If you can't imagine an implementer objectively checking ✅ or ❌, rewrite it.
+- **Security section is not optional.** Even UI-only features get "N/A — UI-only, no data mutation."
+- **Don't start implementation.** This skill produces the spec and stops.
 
-3. **What are we assuming?**
-   - Make implicit assumptions explicit
-   - "Are we assuming the user is already logged in?"
+## Antipatterns
 
-Capture in Assumptions & Constraints section.
-
-### Step 7: Resolve Open Questions
-
-Review what you've gathered and ask:
-
-1. **Anything unclear that we should clarify now?**
-2. **Any decisions we need to make before starting?**
-
-Document resolved questions.
-
-### Step 8: Assemble Specification
-
-1. Create the spec file at `Documents/specs/{issue-number}-{slug}-spec.md`
-   - If no issue number, use a descriptive slug
-   - Example: `Documents/specs/42-dark-mode-spec.md`
-
-2. Use the template from `Documents/templates/spec-template.md`
-
-3. Fill in all sections from the interview:
-   - Problem Statement
-   - Acceptance Criteria (as checkboxes)
-   - Non-Goals
-   - Security Considerations
-   - Assumptions & Constraints
-   - Technical Notes
-   - Open Questions Resolved
-
-4. Set Status to "Draft"
-
-### Step 9: Create/Update GitHub Issue
-
-**If no issue exists yet, create one.** If working from an existing issue, post a comment with the spec summary.
-
-> See shared/github-ops.md for issue creation and posting comments.
-
-**After creating/updating the issue:**
-
-1. **Link issue to spec** - Add `**Issue:** #{number}` to the spec header
-
-Spec stays as `Draft` until human approves after spec-review.
-
-
-### Step 9.5: Add Issue to Project (MANDATORY)
-
-**Every issue MUST be added to the project board.** No exceptions.
-
-1. **Find the project number:**
-   - Check project's `CLAUDE.md` for `Project Number:` in GitHub Config
-   - If not documented, ask the user
-   - **Document it** in the project's `CLAUDE.md` for future:
-     ```markdown
-     ## GitHub Config
-     - **Project Number:** {number}
-     ```
-
-2. **Add the issue to the project and set status.**
-
-> See shared/github-ops.md for adding to project and setting status.
-
-3. **Ask iteration and status:**
-   > "Which iteration and status?"
-   > - Backlog (not scheduled yet)
-   > - Ready (scheduled, waiting to start)
-   > - In Progress (starting now)
-
-**Fallback:** If project board operations fail, provide manual instructions:
-"Please add issue #{number} to the project board and set it to {status}."
-
-
-> **End-of-skill check:** See `shared/primitive-updates.md`. Signals: domain terms or acronyms surfaced during requirements.
-
-### Step 10: Handoff
-
-Tell the user:
-
-"Spec is at `Documents/specs/{filename}`. Review it, then:
-
-`/spec-review Documents/specs/{filename}`
-
-That will flag any gaps. Once you approve, we pick TDD or direct implementation."
-
-## Interview Checklist
-
-Use this to track coverage:
-
-- [ ] Problem Statement: Clear problem defined
-- [ ] Problem Statement: Why it matters explained
-- [ ] Problem Statement: Who benefits identified
-- [ ] Acceptance Criteria: At least 3 testable criteria
-- [ ] Acceptance Criteria: Edge cases considered
-- [ ] Acceptance Criteria: **Each criterion has Test Type (Unit/Integration/Manual)**
-- [ ] Non-Goals: At least 1 explicit exclusion
-- [ ] Security: Data sensitivity assessed
-- [ ] Security: Auth/authz requirements defined
-- [ ] Security: Input validation needs identified
-- [ ] Assumptions: Key assumptions documented
-- [ ] Constraints: Technical constraints noted
-- [ ] Open Questions: All questions resolved
-- [ ] **GitHub: Issue added to project board**
-- [ ] **GitHub: Sprint status set (Backlog/Current/Next)**
-
-## Best Practices
-
-1. **Don't rush** - Better to ask one more question than miss a requirement
-2. **Use concrete examples** - If something is vague, ask for an example
-3. **Read back summaries** - "So if I understand correctly..." to verify
-4. **Challenge assumptions** - "Why do we need X?" can reveal unnecessary scope
-5. **Keep it conversational** - This is a dialogue, not an interrogation
-
-## Example
-
-User: "I want to start work on issue #42"
-
-Claude:
-1. Runs `gh issue view 42` to get context
-2. "I've read issue #42: Add dark mode toggle. Let me ask some questions..."
-3. Proceeds through interview phases
-4. Creates `Documents/specs/42-dark-mode-spec.md`
-5. Posts summary comment to issue #42
-6. Adds to project, asks about iteration
-7. Tells user next steps
+- Accepting vague requirements without probing ("make it work better")
+- Writing criteria you can't test ("system is reliable")
+- Skipping the self-validation pass
+- Not including an implementation brief (the agent needs this to one-shot)
+- Interrogation style — this is a conversation with a founder who thinks conceptually
+- Over-documenting obvious things at the expense of ambiguous things

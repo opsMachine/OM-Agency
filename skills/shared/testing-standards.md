@@ -1,6 +1,6 @@
 # Testing Standards
 
-Verification and quality control patterns for implementation work. Referenced by `implement-direct`, `implement-to-pass`, and the workflow manager.
+Verification and quality control patterns for implementation work. Referenced by `implement` and the workflow manager.
 
 ---
 
@@ -208,8 +208,7 @@ When handing off to QA, consider recording a quick video of your testing:
 
 This document is referenced by:
 - **workflow-router** - Passes testing requirements to all implementation sub-agents
-- **implement-direct** - Must follow before marking work complete
-- **implement-to-pass** - Must follow before marking work complete
+- **implement** - Must follow before marking work complete
 - **qa-handoff** - Uses the QA Handoff Template
 
 When dispatched as a sub-agent, implementation skills must:

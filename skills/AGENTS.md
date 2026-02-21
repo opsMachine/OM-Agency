@@ -35,7 +35,7 @@ A modular skill ecosystem for Claude Code. Skills are composable workflow nodes 
    - `test-planning.md` - Test granularity framework (when to combine vs split tests)
    - `security-lens.md` - Security thinking at design, implementation, and review time
 
-3. **Human gates are mandatory.** Gate A (after spec-review) and Gate B (after implementation) require human approval. Never auto-proceed past them.
+3. **Human gates are mandatory.** Gate A (after interview) and Gate B (after verify) require human approval. Never auto-proceed past them.
 
 4. **Confirm before writing to GitHub.** Every `gh` write operation gets a confirmation prompt first. See `shared/github-ops.md`.
 
@@ -52,14 +52,12 @@ A modular skill ecosystem for Claude Code. Skills are composable workflow nodes 
 ```
 workflow-router/     ← START HERE. State model, decision trees, skill index.
 shared/              ← General methodology. github-ops.md, spec-io.md, e2e-patterns.md, test-planning.md, security-lens.md.
-create-spec/         ← Interview. Requirements → spec.
-spec-review/         ← Review spec for completeness. [Gate A follows]
-plan-tests/          ← Plan tests from approved spec.
-write-failing-test/  ← Write failing tests (red phase).
-implement-to-pass/   ← Implement to pass tests (green phase). [Gate B follows]
-implement-direct/    ← Implement without TDD. [Gate B follows]
+create-spec/         ← Interview. Requirements → spec. [Gate A follows]
+implement/           ← One-shot: tests + code + self-verify from approved spec.
+verify/              ← Fresh-context review of implementation against spec. [Gate B follows]
 diagnose/            ← Bug investigation.
 qa-handoff/          ← Post QA checklist. Terminal step.
+review-audit/        ← Validate a code review against actual code. Standalone.
 full-security-audit/ ← Security pipeline orchestrator.
 1-security-audit/    ← Security Phase 1: scan.
 2-security-critique/ ← Security Phase 2: red team.

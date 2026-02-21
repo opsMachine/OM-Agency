@@ -226,7 +226,7 @@ Project-level entry point for Claude Code.
 
 1. **Primitives are factual snapshots.** They describe what the project IS. Update them when the project fundamentally changes, or use `/remember` for one-off facts.
 2. **active-context.md is the scratchpad.** The only primitive that changes every session. Update it as you work.
-3. **Global skills handle workflow.** `/interview`, `/implement-direct`, `/diagnose`, `/qa-handoff` etc. live at `~/.claude/skills/`. Don't re-implement them here.
+3. **Global skills handle workflow.** `/interview`, `/implement`, `/verify`, `/diagnose`, `/qa-handoff` etc. live at `~/.claude/skills/`. Don't re-implement them here.
 4. **Other primitives are on-demand.** Don't load stack.md, conventions.md, or local-dev.md at session start. Read them when you actually need them (e.g., before writing code, before running dev).
 
 ---

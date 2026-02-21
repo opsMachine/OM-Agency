@@ -1,6 +1,6 @@
 # Test Planning Guide
 
-Reference for planning test coverage and granularity. Used by plan-tests skill.
+Reference for planning test coverage and granularity. Used by `implement` skill when deciding test strategy.
 
 ## Test Granularity Framework
 
@@ -298,6 +298,6 @@ Only create new file if:
 
 ## When to Reference This Document
 
-**From plan-tests (Step 4):** Use granularity framework and decision flowchart to map criteria to tests.
+**From implement (Phase 1):** Use granularity framework and decision flowchart to map criteria to tests.
 
 **When reviewing test plans:** Check against anti-patterns and checklist.

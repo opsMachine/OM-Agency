@@ -25,7 +25,7 @@ contract:
       - field: "status"
         sets_to: "Approved"
     side_effects: ["Creates bug spec in Documents/specs/"]
-  next: [plan-tests, implement-direct]
+  next: [implement]
   human_gate: false
 ---
 

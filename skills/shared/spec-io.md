@@ -49,9 +49,26 @@ New specs are created by `/interview`. Use this template:
 - **Failure modes:** {what happens if auth fails, input is malicious, or a service is down}
 - **RLS:** {new tables or policy changes needed — reference supabase-security if yes}
 
+## Falsification
+
+> What could go wrong? What assumptions might be wrong? What edge cases could break this?
+> This section helps the implementer and verifier know where to look for problems.
+
+- {scenario that could invalidate the happy path}
+- {edge case worth testing}
+- {assumption that might not hold}
+
 ## Assumptions & Constraints
 
 - {dependencies, technical constraints, assumptions}
+
+## Implementation Brief
+
+> Context for one-shot implementation. The implementer reads this to understand WHERE and HOW to build.
+
+- **Files likely affected:** {list files/modules that will need changes}
+- **Patterns to follow:** {existing patterns in the codebase to match}
+- **Test infrastructure:** {test setup needed — existing test utils, fixtures, mocking patterns}
 
 ## Technical Notes
 
@@ -97,12 +114,10 @@ Each criterion must be specific enough for an implementer to assess ✅ satisfie
 
 - **Impact:** {from diagnosis — "none" if not security-relevant}
 
-## Technical Notes
+## Implementation Brief
 
-**Files involved:**
-- `{file}` — {what's wrong and what needs to change}
-
-**Reproduction:** {steps to trigger the bug}
+- **Files involved:** {files that need changes, with what's wrong in each}
+- **Reproduction:** {steps to trigger the bug}
 ```
 
 **Key differences from feature specs:**
@@ -111,7 +126,7 @@ Each criterion must be specific enough for an implementer to assess ✅ satisfie
 - Problem Statement uses Actual/Expected/Root Cause format
 - Skips Assumptions & Constraints and Open Questions
 
-Downstream skills (`plan-tests`, `write-failing-test`, `implement-direct`) consume bug specs identically to feature specs — same header format, same Acceptance Criteria table, same status field.
+Downstream skills (`implement`, `verify`) consume bug specs identically to feature specs — same header format, same Acceptance Criteria table, same status field.
 
 ---
 
@@ -126,8 +141,9 @@ A complete spec has these sections, in order:
 | Acceptance Criteria | Testable criteria with Test Type column | `interview` |
 | Non-Goals | Explicit exclusions | `interview` |
 | Security Considerations | Data sensitivity, auth, RLS | `interview` |
+| Falsification | Edge cases, assumptions, failure scenarios | `interview` |
 | Assumptions & Constraints | Dependencies, technical constraints | `interview` |
-| Test Plan | Planned tests mapped to criteria | `plan-tests` |
+| Implementation Brief | Files, patterns, test infra for one-shot execution | `interview` |
 | Technical Notes | Implementation hints | `interview` |
 | Open Questions Resolved | Decisions made during interview | `interview` |
 
@@ -141,7 +157,7 @@ The top of the spec file looks like:
 # {Feature Title}
 
 **Issue:** #{number}
-**Status:** {Draft | Approved}
+**Status:** {Draft | Approved | Implemented}
 **Created:** {date}
 ```
 
@@ -150,8 +166,8 @@ Find the line starting with `**Status:**`. The value after the colon is the curr
 
 ### Updating status
 Replace the value on that line:
-- `**Status:** Draft` → `**Status:** Approved` (human does this after spec-review)
-- `**Status:** Approved` → `**Status:** Implemented` (`implement-direct` sets this on completion)
+- `**Status:** Draft` → `**Status:** Approved` (human approves at Gate A)
+- `**Status:** Approved` → `**Status:** Implemented` (`implement` sets this on completion)
 
 ---
 
@@ -174,47 +190,10 @@ Format: a table with columns `#`, `Criterion`, `Test Type`.
 - `Integration` — requires real DB/services
 - `Manual` — cannot automate, goes to QA checklist
 
-### Extracting criteria for QA
-Pull all rows. Manual criteria become the QA checklist in `/qa-handoff`. Unit and Integration criteria become automated tests in `/plan-tests`.
-
----
-
-## Test Plan Section
-
-Added by `/plan-tests` after spec approval. Structure:
-
-```markdown
-## Test Plan
-
-**Status:** {Planned | Tests Written | Passing}
-
-**Total:** X criteria → Y automated tests + Z manual checks
-
-### Automated Tests
-
-**Expand:** `src/test/path/existing-file.test.ts`
-| Test | Criteria | Expected Failure |
-|------|----------|------------------|
-| `it('does X')` | #1, #3 | "X not implemented" |
-
-**Create:** `src/test/path/new-file.test.ts`
-| Test | Criteria | Expected Failure |
-|------|----------|------------------|
-| `it('does Y')` | #2 | "Y is not a function" |
-
-### Manual Checks (QA Checklist)
-- #4: "Verify Z in browser"
-```
-
-### Reading Test Plan status
-Find `**Status:**` inside the `## Test Plan` section (not the header status — that's the spec status). Same pattern: value after the colon.
-
-### Updating Test Plan status
-- `plan-tests` sets: `**Status:** Planned`
-- `write-failing-test` sets: `**Status:** Tests Written`
-- `implement-to-pass` sets: `**Status:** Passing`
-
-Replace the value on the status line within the Test Plan section.
+### How skills use criteria
+- `implement` reads the Test Type column to decide which criteria get automated tests (Unit/Integration) and which become manual checks
+- `verify` reads criteria to independently validate that each one is satisfied in the implementation
+- `qa-handoff` extracts Manual criteria for the QA checklist
 
 ---
 
@@ -236,10 +215,21 @@ Read this when implementing to know what security checks apply. Reference `share
 
 ---
 
-## Common Operations
+## Implementation Brief Section
 
-### "Does this spec have a test plan?"
-Check if a `## Test Plan` section exists in the file.
+```markdown
+## Implementation Brief
+
+- **Files likely affected:** {list files/modules that will need changes}
+- **Patterns to follow:** {existing patterns in the codebase to match}
+- **Test infrastructure:** {test setup needed — existing test utils, fixtures, mocking patterns}
+```
+
+This section is filled by `interview` after exploring the codebase. It gives the `implement` skill enough context to one-shot the feature without re-exploring from scratch. The more specific this section is, the better the implementation.
+
+---
+
+## Common Operations
 
 ### "What's the spec status?"
 Read the `**Status:**` line in the header. Values: `Draft`, `Approved`, `Implemented`.
@@ -247,5 +237,5 @@ Read the `**Status:**` line in the header. Values: `Draft`, `Approved`, `Impleme
 ### "What criteria are automated vs manual?"
 Read the Acceptance Criteria table. Filter by Test Type column.
 
-### "What test files does the plan specify?"
-Read the Test Plan section. Look for **Expand:** and **Create:** lines — those are the test file paths.
+### "What files will this change?"
+Read the Implementation Brief section. The "Files likely affected" line lists the expected scope.

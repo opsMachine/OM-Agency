@@ -34,8 +34,7 @@ Each hooked skill states its signals inline. Reference table:
 
 | Skill | Watch for |
 |---|---|
-| `implement-direct` | New/changed packages in package.json. New scripts. New directories in src/. |
-| `implement-to-pass` | Same as implement-direct. |
+| `implement` | New/changed packages in package.json. New scripts. New directories in src/. |
 | `diagnose` | "Don't do X" discoveries. Non-obvious system behavior. Domain terms encountered during investigation. |
 | `create-spec` | Domain terms or acronyms that surfaced during requirements gathering. |
 | `qa-handoff` | Decisions made during testing or QA review. |

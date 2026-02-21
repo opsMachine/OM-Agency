@@ -8,7 +8,7 @@ license: Complete terms in LICENSE.txt
 
 **This is a toolkit, not a workflow skill.** It provides helper scripts and examples for E2E testing with Playwright.
 
-**Used by:** TDD workflow skills (plan-tests, write-failing-test, implement-to-pass)
+**Used by:** `implement` skill (test and implementation phases)
 **Primary reference:** See `shared/e2e-patterns.md` for complete E2E testing patterns and guidance.
 
 ---
@@ -96,11 +96,10 @@ Use these as starting points for E2E tests.
 
 **This toolkit is referenced by:**
 
-1. **plan-tests** - When planning E2E tests
-2. **write-failing-test** - When writing E2E tests (uses `with_server.py` and patterns)
-3. **implement-to-pass** - When implementing code to pass E2E tests
+1. **implement** (Phase 1) - When writing E2E tests from spec criteria (uses `with_server.py` and patterns)
+2. **implement** (Phase 2) - When implementing code to pass E2E tests
 
-**You don't need to invoke this skill directly during TDD.** The workflow skills use it automatically.
+**You don't need to invoke this skill directly.** The implement skill uses it automatically.
 
 ---
 
