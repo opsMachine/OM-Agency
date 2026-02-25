@@ -33,6 +33,13 @@ This is the skill system itself — not a product codebase. Changes here affect 
 - `supabase-security` — Supabase security reference
 - `remember` — store facts for future sessions
 
+## Commands
+### Principle: avoid commands that require user approval, prefer allowlisted commands. Prefer MCP to CLI. Use commands that require permission only when no viable alternatives exist.
+NEVER user `npx supabase`, always use `supabase`
+USE github MCP instead of CLI
+USER `npm run test...` to run tests. 
+AVOID USING `npx` when possible 
+
 ## Workflow Model
 
 ```
