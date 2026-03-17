@@ -14,10 +14,15 @@ A reusable workflow system for AI agents that covers:
 ## Quick Start
 
 1. Clone this repo
-2. Symlink into your Claude Code config:
+2. Run the symlink setup (makes this repo the global source of truth for Claude and Cursor):
+   ```bash
+   ./setup-symlinks.sh
+   ```
+   This creates: `~/.claude/skills`, `~/.claude/agents`, `~/.cursor/rules`, and `~/.agents/skills` → this repo. Manual alternative:
    ```bash
    ln -s /path/to/OM-Agency/skills ~/.claude/skills
    ln -s /path/to/OM-Agency/agents ~/.claude/agents
+   ln -s /path/to/OM-Agency/skills ~/.cursor/rules
    ```
 3. Copy `settings.example.json` to your project's `.claude/settings.json` and adjust
 4. See `skills/SKILL.md` for the full skill writing guide

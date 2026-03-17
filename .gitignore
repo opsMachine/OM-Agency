@@ -69,3 +69,5 @@ agent-output/
 !OPERATIONAL_SYSTEM.md
 !skills/**/*.md
 !skills/**/SKILL.md
+mcp.json
+cursor-sandbox-apparmor.deb
