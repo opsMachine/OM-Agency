@@ -103,7 +103,20 @@ query: "[deal name or company]"
 ### Step 5 — Write and confirm
 After writing, confirm back to Mitch in plain language what was created or updated. Keep it brief.
 
----
+### Step 6 — Mirror to `progress.md` (when deal state changed)
+
+**After any Deal create/update that changes stage, next action, last contact, temperature, or lost reason:**
+
+1. Check for a repo mirror file:
+   - `clients/<slug>/progress.md` (search `clients/` by deal name or known slug)
+   - `sales/<slug>/progress.md` (pipeline-only engagements)
+2. **If found:** update YAML frontmatter to match CRM (`stage`, `status`, `next_action`, `next_action_date`, `last_contact`, `temperature`, `updated`). Append one dated line to the **Log** section.
+3. **If not found** and deal is active (not blank radar): note in confirmation — *"No progress.md yet — create from clients/TEMPLATE-progress.md?"* Don't create without Mitch confirming unless he explicitly asked to scaffold the engagement.
+4. **If frontmatter changed:** refresh that engagement's row in `clients/INDEX.md` (OM-Repo workspace).
+
+Convention: `clients/README.md` (OM-Repo). CRM remains source of truth for relational state; `progress.md` is the repo mirror for agents and weekly planning.
+
+**Skip Step 6** for read-only queries (pipeline lookup, status check) with no writes.
 
 ## Common Scenarios
 
