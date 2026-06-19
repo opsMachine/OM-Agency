@@ -1,15 +1,9 @@
 ---
 name: ops-machine-crm
 description: >
-  Ops Machine CRM agent skill for Mitch Schwartz. Manages contacts and deals in the Notion CRM
-  under Ops Machine Workspace > Utilities | OM > CRM. Use this skill whenever Mitch wants to:
-  add, update, or look up a contact or deal; log a conversation, meeting, or transcript; forward
-  an email or note to be captured in the CRM; check who he should follow up with; ask "what's
-  the status of [person or deal]"; or say things like "add this person", "log this call",
-  "update the deal", "who have I not talked to lately", "what's in my pipeline", or any variant
-  of querying or writing to the CRM. Also trigger when Mitch pastes a transcript, email, or
-  meeting summary and asks what to do with it. This skill is the intelligence layer between
-  Mitch's raw input and clean Notion records — always query before creating to avoid duplicates.
+  ANY CRM or progress.md write, log call, add contact, pipeline lookup, paste transcript/email.
+  Runs lifecycle routing in Step 0 — delivery work goes to progress.md not Won CRM Next Action.
+  Query before create. For week view use week-scan not this skill. OM-Repo SKILLS-MAP.md.
 ---
 
 # Ops Machine CRM Skill
@@ -51,8 +45,9 @@ Always use the **data source ID** (collection ID) when creating or updating reco
 |-------|------|-------|
 | Name | Title | Deal name (usually "[Client] - [Service]" format) |
 | Type | Select | Client / Partnership — used for subgrouping in pipeline view. Client = revenue deal, Partnership = referral/partner development track |
-| Stage | Select | Lead → Q Call Booked → Qualified → Proposal Sent → Hourly Funnel → Launching → Won / Lost — leave BLANK for pre-funnel / radar deals where no action is being taken yet. Blank is the default "on my radar" state. **Hourly Funnel** = paid/hourly exploration underway, no commitment yet. **Launching** = proposal accepted, work is starting. |
-| Deal Value | Number | Estimated value |
+| Stage | Select | Lead → Q Call Booked → Qualified → Proposal Sent → Hourly Funnel → Launching → Won / Lost — leave BLANK for pre-funnel / radar deals where no action is being taken yet. Blank is the default "on my radar" state. **Hourly Funnel** = paid/hourly exploration underway, no commitment yet. **Launching** = proposal accepted, work is starting. **Won** = commercial close (includes active delivery — use Next Action for live work, not Stage). |
+| Deal Value | Number | **Meaning depends on deal shape** — see [Deal Value semantics](#deal-value-semantics) below |
+| Recurring | Checkbox | **true** = ongoing monthly revenue (MRR). Deal Value = monthly run rate in deal currency. **false** = one-time or hourly-cumulative. |
 | Size | Select | Large / Medium / Small — deal size estimate |
 | Last Contact | Date | Last touchpoint on this deal |
 | Next Action | Text | Next step on this deal |
@@ -68,11 +63,40 @@ Always use the **data source ID** (collection ID) when creating or updating reco
 Notion can't filter completed vs. incomplete tasks cleanly, so these two fields act as a
 manual workaround. Do not suggest consolidating them.
 
+### Deal Value semantics
+
+`Deal Value` + `Recurring` + `Currency` work together. **`Value (CAD)`** is a formula — don't write to it.
+
+| Shape | Recurring | Deal Value means | When to update |
+|-------|-----------|------------------|----------------|
+| **Fixed project** | false | Total contract value | At close; rarely after |
+| **Recurring retainer / MRR** | true | Monthly run rate (e.g. $2,500/mo) | When commercial terms change |
+| **Hourly (no floor)** | false | **Cumulative billed or agreed-to-date** | After each invoice tranche or when Mitch says total accrued |
+| **Hourly with monthly target** | true | Target MRR equivalent | Even if actual billing is hourly — note rate in deal body |
+
+**Examples (live as of 2026-06-05):**
+- **Structur** — Won, Recurring=true, $2,500 USD/mo (actual billing $125/hr arrears; MRR for pipeline math)
+- **Big Lake** — Won, Recurring=false, $1,500 CAD cumulative hourly (bump Deal Value as hours accrue)
+- **EFC** — Won, Recurring=false, $3,000 CAD fixed project (Third Wunder channel)
+
+**Stage = Won + active delivery:** Run **launch transition** (engagement-lifecycle). Won = commercial close. **Delivery next actions live in `progress.md`**, not CRM.
+
 ---
 
 ## Core Workflow: Query Before Write
 
 **This is the most important rule.** Never create a new record without first checking if one exists.
+
+### Step 0 — Route by lifecycle (before any write)
+
+Read OM-Repo [`.claude/skills/engagement-lifecycle/SKILL.md`](engagement-lifecycle/SKILL.md) (in Mitch's OM-Repo checkout) or the copy at `OM-Repo/.claude/skills/engagement-lifecycle/SKILL.md`. Router: `SKILLS-MAP.md`.
+
+1. Resolve deal + `progress.md` path (glob `clients/`, `sales/`, `partnerships/`)
+2. Read `lifecycle_phase` from progress frontmatter; infer from CRM Stage if missing
+3. **Redirect writes:**
+   - `delivery` → update **`progress.md` only**; CRM limited to Deal Value / Recurring
+   - `pipeline` / `launch` / `expansion` / `crm_only` → per lifecycle table
+4. If Won deal still has live Next Action → propose **freeze** + progress ownership (don't keep updating CRM as project tracker)
 
 ### Step 1 — Parse the input
 Extract: person name(s), company/org, deal name or context, any dates, any status signals.
@@ -105,18 +129,30 @@ After writing, confirm back to Mitch in plain language what was created or updat
 
 ### Step 6 — Mirror to `progress.md` (when deal state changed)
 
-**After any Deal create/update that changes stage, next action, last contact, temperature, or lost reason:**
+**Run Step 0 first.** Mirror rules depend on `lifecycle_phase`:
+
+| Phase | Step 6 behavior |
+|-------|-----------------|
+| `pipeline` | Mirror CRM → progress frontmatter if file exists |
+| `launch` | Mirror once + ensure scaffold; run launch transition checklist |
+| `delivery` | **Do not mirror Next Action to CRM** — update progress.md only; CRM commercial fields only if Mitch specifies value/recurring |
+| `crm_only` | Skip progress mirror |
+| `expansion` | New deal in CRM + log line in existing progress.md |
+
+**After any Deal create/update that changes stage, next action, last contact, temperature, or lost reason (pipeline/launch only):**
 
 1. Check for a repo mirror file:
    - `clients/<slug>/progress.md` (search `clients/` by deal name or known slug)
    - `sales/<slug>/progress.md` (pipeline-only engagements)
-2. **If found:** update YAML frontmatter to match CRM (`stage`, `status`, `next_action`, `next_action_date`, `last_contact`, `temperature`, `updated`). Append one dated line to the **Log** section.
-3. **If not found** and deal is active (not blank radar): note in confirmation — *"No progress.md yet — create from clients/TEMPLATE-progress.md?"* Don't create without Mitch confirming unless he explicitly asked to scaffold the engagement.
-4. **If frontmatter changed:** refresh that engagement's row in `clients/INDEX.md` (OM-Repo workspace).
+   - `partnerships/**/progress.md`
+2. **If found and phase ≠ delivery:** update YAML frontmatter to match CRM (`stage`, `status`, `next_action`, `next_action_date`, `last_contact`, `temperature`, `updated`, `deal_value`, `recurring` when set). Append one dated line to the **Log** section.
+3. **If delivery phase:** update progress.md only; if CRM Next Action was written by mistake, clear it on confirm.
+4. **If not found** and deal is active (not blank radar): note in confirmation — *"No progress.md yet — run launch transition?"* Don't create without Mitch confirming unless he explicitly asked to scaffold the engagement.
+5. **If frontmatter changed:** refresh that engagement's row in `clients/INDEX.md` (OM-Repo workspace).
 
-Convention: `clients/README.md` (OM-Repo). CRM remains source of truth for relational state; `progress.md` is the repo mirror for agents and weekly planning.
+Convention: `clients/README.md` (OM-Repo). **Pipeline:** CRM leads. **Delivery:** progress.md leads.
 
-**Skip Step 6** for read-only queries (pipeline lookup, status check) with no writes.
+**Skip Step 6** for read-only queries (pipeline lookup, status check, week-scan) with no writes.
 
 ## Common Scenarios
 
@@ -220,6 +256,6 @@ Mitch built this CRM to be usable — not to be another system that collects dus
 
 - Don't create duplicate contacts. Always search first.
 - Don't merge the two task relation fields on Deals — they're separate by design.
-- Don't add new columns or schema changes without being asked.
+- Don't add new columns or schema changes without being asked — **except** `Recurring` (checkbox on Deals, added 2026-06-05) which is now part of the model.
 - Don't over-report. A one-liner confirmation is almost always enough.
 - Don't ask Mitch to format his input before you'll process it. Take the raw thing and work with it.
