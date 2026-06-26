@@ -127,11 +127,8 @@ echo -e "   ${GREEN}✓ Claude Code:${NC} Skills already at ~/.claude/skills (so
 # If you use other tools that look here, this wires them up.
 link_global "$HOME/.agents/skills" "Local Agents / ChatGPT"
 
-# --- 3. CURSOR (Global Rules) ---
-# Cursor doesn't have a standardized "global rules folder" that works automatically
-# without config, BUT many users link `~/.cursor/rules`.
-# If you add "Always look in ~/.cursor/rules" to your Cursor Global System Prompt,
-# this link will make it work.
+# --- 3. CURSOR (Global Skills + Rules) ---
+link_global "$HOME/.cursor/skills" "Cursor Global Skills"
 link_global "$HOME/.cursor/rules" "Cursor Global Rules"
 
 # --- 4. GEMINI (if applicable) ---

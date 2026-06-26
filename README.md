@@ -18,12 +18,16 @@ A reusable workflow system for AI agents that covers:
    ```bash
    ./setup-symlinks.sh
    ```
-   This creates: `~/.claude/skills`, `~/.claude/agents`, `~/.cursor/rules`, and `~/.agents/skills` → this repo. Manual alternative:
+   This creates: `~/.claude/skills`, `~/.claude/agents`, `~/.cursor/skills`, `~/.cursor/rules`, `~/.agents/skills`, `~/.cursor/mcp.json`, `~/.claude/mcp.json`, and (when present) `OM-Repo/.cursor/mcp.json` → this repo. Manual alternative:
    ```bash
    ln -s /path/to/OM-Agency/skills ~/.claude/skills
    ln -s /path/to/OM-Agency/agents ~/.claude/agents
+   ln -s /path/to/OM-Agency/skills ~/.cursor/skills
    ln -s /path/to/OM-Agency/skills ~/.cursor/rules
+   ln -s /path/to/OM-Agency/mcp.json ~/.cursor/mcp.json
+   ln -s /path/to/OM-Agency/mcp.json ~/.claude/mcp.json
    ```
+   Do **not** also symlink `OM-Repo/.cursor/mcp.json` — Cursor merges global + project MCP and you get every server twice.
 3. Copy `settings.example.json` to your project's `.claude/settings.json` and adjust
 4. See `skills/SKILL.md` for the full skill writing guide
 

@@ -71,3 +71,4 @@ agent-output/
 !skills/**/SKILL.md
 mcp.json
 cursor-sandbox-apparmor.deb
+mcp.json.pre-merge-1781899885

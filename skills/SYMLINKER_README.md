@@ -54,6 +54,7 @@ powershell -ExecutionPolicy Bypass -File check-dev-mode.ps1
 
 The script creates symlinks from:
 - `~/.agents/skills` → `~/.claude/skills` (for ChatGPT and other agents)
+- `~/.cursor/skills` → `~/.claude/skills` (for Cursor global skills)
 - `~/.cursor/rules` → `~/.claude/skills` (for Cursor global rules)
 - `~/.gemini/skills` → `~/.claude/skills` (for Gemini - uncomment in script if needed)
 

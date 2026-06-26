@@ -5,10 +5,12 @@
 # Creates:
 #   ~/.claude/skills   -> $REPO/skills
 #   ~/.claude/agents   -> $REPO/agents
+#   ~/.cursor/skills   -> $REPO/skills   (Cursor global skills)
 #   ~/.cursor/rules    -> $REPO/skills   (Cursor global rules = same skills)
 #   ~/.agents/skills   -> $REPO/skills   (optional; for other agents)
 #   ~/.cursor/mcp.json -> $REPO/mcp.json
 #   ~/.claude/mcp.json -> $REPO/mcp.json
+#   (NOT OM-Repo/.cursor/mcp.json — Cursor would load global + project = duplicates)
 
 set -e
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -56,12 +58,23 @@ echo ""
 
 link_to_repo "$HOME/.claude/skills" "$SKILLS" "~/.claude/skills"
 link_to_repo "$HOME/.claude/agents"  "$AGENTS" "~/.claude/agents"
+link_to_repo "$HOME/.cursor/skills"  "$SKILLS" "~/.cursor/skills"
 link_to_repo "$HOME/.cursor/rules"   "$SKILLS" "~/.cursor/rules"
 link_to_repo "$HOME/.agents/skills"  "$SKILLS" "~/.agents/skills"
 
-# MCP config: single source of truth in repo root
+# MCP config: single source of truth in repo root (~/.cursor/mcp.json only).
+# Do NOT symlink OM-Repo/.cursor/mcp.json here — Cursor merges global + project
+# configs and would load every server twice.
 link_to_repo "$HOME/.cursor/mcp.json" "$REPO/mcp.json" "~/.cursor/mcp.json"
 link_to_repo "$HOME/.claude/mcp.json" "$REPO/mcp.json" "~/.claude/mcp.json"
+
+OM_REPO_MCP="$HOME/Documents/GitHub/OM-Repo/.cursor/mcp.json"
+if [[ -L "$OM_REPO_MCP" ]] && [[ "$(readlink -f "$OM_REPO_MCP")" == "$REPO/mcp.json" ]]; then
+  echo -e "   ${YELLOW}↻${NC} Removing OM-Repo/.cursor/mcp.json symlink (avoids duplicate MCP in Cursor)."
+  rm "$OM_REPO_MCP"
+elif [[ -e "$OM_REPO_MCP" ]]; then
+  echo -e "   ${BLUE}ℹ${NC} OM-Repo/.cursor/mcp.json exists (not our symlink); left unchanged."
+fi
 
 echo ""
 echo -e "${GREEN}Done.${NC} Claude Code and Cursor now use this repo as the global source of truth."
